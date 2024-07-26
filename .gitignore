@@ -2,3 +2,5 @@
 *.pyc
 __pycache__/
 fastapiserver/
+fastapiservertwo/
+model.pth
