@@ -31,6 +31,7 @@ class XTTSynthesizer:
     print(f"Loading tokenizer from: {self.tokenizer_path}")
     try:      
       checkpoint_dir = str(Path(self.checkpoint_path).parent) + "/"
+      print(f"Loading checkpoint from: {checkpoint_dir}")
       model.load_checkpoint(config, checkpoint_dir=checkpoint_dir, checkpoint_path=self.checkpoint_path, vocab_path=self.tokenizer_path, use_deepspeed=False) 
       print("Model checkpoint loaded successfully")
     except Exception as e:

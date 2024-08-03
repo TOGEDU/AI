@@ -1,17 +1,34 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
+from jose import JWTError, jwt
+import base64
 from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
 from synthesizer import XTTSynthesizer
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
+
+# Base64로 인코딩된 SECRET_KEY를 디코딩
+encoded_secret_key = os.getenv("SECRET_KEY")
+SECRET_KEY = base64.b64decode(encoded_secret_key)
+ALGORITHM = os.getenv("ALGORITHM", "HS512")
+
+def verify_token(authorization: str = Header(...)):
+    token = authorization.split(" ")[1] # "Bearer {token}"에서 토큰 부분 추출
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        parent_id: str = payload.get("parentId")
+        return {"user_id": user_id, "parent_id": parent_id}  # 딕셔너리로 반환
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 class SynthesizeRequest(BaseModel):
-    config_path: str
-    tokenizer_path: str
-    checkpoint_path: str
-    speaker_reference_path: str
     text: str
 
 def remove_file(file_path: str):
@@ -21,28 +38,34 @@ def remove_file(file_path: str):
         print(f"Error removing file {file_path}: {e}")
 
 @app.post("/synthesize")
-def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks):
+def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, user_info: dict = Depends(verify_token)):
     try:
-        print(f"Config Path: {request.config_path}")
-        print(f"Tokenizer Path: {request.tokenizer_path}")
-        print(f"Checkpoint Path: {request.checkpoint_path}")
-        print(f"Speaker Reference Path: {request.speaker_reference_path}")
+        user_id = user_info["user_id"]
+        parent_id = user_info["parent_id"]
+        print(f"user_id: {user_id}")
+        print(f"parent_id: {parent_id}")
+
+        # 사용자 ID에 따라 동적으로 파일 경로 생성
+        config_path = f"ttsmodel/{parent_id}/config.json"
+        tokenizer_path = f"ttsmodel/{parent_id}/vocab.json"
+        checkpoint_path = f"ttsmodel/{parent_id}/model.pth"
+        speaker_reference_path = f"ttsmodel/{parent_id}/voice.wav"
 
         # 파일 경로 존재 여부 확인
-        if not os.path.exists(request.config_path):
-            raise HTTPException(status_code=400, detail=f"Config file not found: {request.config_path}")
-        if not os.path.exists(request.tokenizer_path):
-            raise HTTPException(status_code=400, detail=f"Tokenizer file not found: {request.tokenizer_path}")
-        if not os.path.exists(request.checkpoint_path):
-            raise HTTPException(status_code=400, detail=f"Checkpoint file not found: {request.checkpoint_path}")
-        if not os.path.exists(request.speaker_reference_path):
-            raise HTTPException(status_code=400, detail=f"Speaker reference file not found: {request.speaker_reference_path}")
+        if not os.path.exists(config_path):
+            raise HTTPException(status_code=400, detail=f"Config file not found: {config_path}")
+        if not os.path.exists(tokenizer_path):
+            raise HTTPException(status_code=400, detail=f"Tokenizer file not found: {tokenizer_path}")
+        if not os.path.exists(checkpoint_path):
+            raise HTTPException(status_code=400, detail=f"Checkpoint file not found: {checkpoint_path}")
+        if not os.path.exists(speaker_reference_path):
+            raise HTTPException(status_code=400, detail=f"Speaker reference file not found: {speaker_reference_path}")
 
         synthesizer = XTTSynthesizer(
-            config_path=request.config_path,
-            tokenizer_path=request.tokenizer_path,
-            checkpoint_path=request.checkpoint_path,
-            speaker_reference_path=request.speaker_reference_path,
+            config_path=config_path,
+            tokenizer_path=tokenizer_path,
+            checkpoint_path=checkpoint_path,
+            speaker_reference_path=speaker_reference_path,
         )
 
         wav_tensor = synthesizer.synthesize(request.text)
@@ -64,4 +87,4 @@ def root():
     return {"message":"HI"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

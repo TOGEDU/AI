@@ -4,3 +4,4 @@ __pycache__/
 fastapiserver/
 fastapiservertwo/
 model.pth
+.env
