@@ -4,6 +4,7 @@ import base64
 from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
+from chatmessage import ChatMessage
 from synthesizer import XTTSynthesizer
 import os
 from dotenv import load_dotenv
@@ -88,3 +89,13 @@ def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+#메세지 전송
+@app.post("/chat")
+def receive_chat(chat_message: ChatMessage):
+    # 채팅 메시지 처리 로직 추가
+    print(f"{chat_message}")
+    # 답변 생성
+    response_message = f"{chat_message.message}의 답변."
+    return {"status": "success", "message": response_message}
