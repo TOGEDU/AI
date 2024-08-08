@@ -95,9 +95,9 @@ if __name__ == "__main__":
 
 #메세지 전송
 @app.post("/chat")
-def receive_chat(chat_message: ChatMessage):
+def receive_chat(chat_message: str):
     # 채팅 메시지 처리 로직 추가
-    print(f"{chat_message}")
+    print(chat_message)
     # 답변 생성
-    response_message = f"{chat_message.message}의 답변."
+    response_message = chat_message+"의 답변."
     return {"status": "success", "message": response_message}
