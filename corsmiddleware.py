@@ -1,17 +1,10 @@
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def apply_cors_middleware(app):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:8080"],  # 또는 ["*"]으로 모든 도메인 허용 배포 시 변경 필요
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
