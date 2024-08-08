@@ -1,18 +1,20 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query
 import jwt
 import base64
 from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
-from chatmessage import ChatMessage
 from synthesizer import XTTSynthesizer
 import os
 from dotenv import load_dotenv
+from corsmiddleware import apply_cors_middleware
 
 load_dotenv()
 
 app = FastAPI()
 
+# CORS 설정 적용
+apply_cors_middleware(app)
 
 # Base64로 인코딩된 SECRET_KEY를 디코딩
 encoded_secret_key = os.getenv("SECRET_KEY")
@@ -84,6 +86,14 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+#메세지 전송
+@app.get("/chat")
+def receive_chat(message: str = Query(...)):
+    # 채팅 메시지 처리 로직 추가
+    print(message)
+    # 답변 생성
+    response_message = message+"의 답변."
+    return {"status": "success", "message": response_message}
 
 @app.get("/")
 def root():
@@ -91,13 +101,3 @@ def root():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-#메세지 전송
-@app.post("/chat")
-def receive_chat(chat_message: str):
-    # 채팅 메시지 처리 로직 추가
-    print(chat_message)
-    # 답변 생성
-    response_message = chat_message+"의 답변."
-    return {"status": "success", "message": response_message}
