@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
-from jose import JWTError, jwt
+import jwt
 import base64
 from fastapi.responses import FileResponse
 import uvicorn
@@ -26,7 +26,9 @@ def verify_token(authorization: str = Header(...)):
         user_id: str = payload.get("sub")
         parent_id: str = payload.get("parentId")
         return {"user_id": user_id, "parent_id": parent_id}  # 딕셔너리로 반환
-    except JWTError:
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 class SynthesizeRequest(BaseModel):
