@@ -38,7 +38,7 @@ def rag(question):
     retriever = db.as_retriever(search_type="mmr")
     docs = db.similarity_search_with_score(question)
     #docs = retriever.get_relevant_documents(question)
-    Chroma.from_documents(docs, embedding_model, persist_directory="./chroma_db")
+    #Chroma.from_documents(docs, embedding_model, persist_directory="./chroma_db")
 #2번째 실행할때
     #db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_model)
   
