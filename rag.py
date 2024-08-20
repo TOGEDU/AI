@@ -29,7 +29,7 @@ def rag(question):
 
     with open(file_path, 'r', encoding='utf-8') as f:
       text = f.read()
-
+#처음 실행할때
     # 텍스트를 Document 객체로 변환
     documents = [Document(page_content=text)]
     # docs 변수에 분할 문서를 저장
@@ -38,6 +38,10 @@ def rag(question):
     retriever = db.as_retriever(search_type="mmr")
     docs = db.similarity_search_with_score(question)
     #docs = retriever.get_relevant_documents(question)
+    Chroma.from_documents(docs, embedding_model, persist_directory="./chroma_db")
+#2번째 실행할때
+    #db = Chroma(persist_directory="./chroma_db", embedding_function=embedding_model)
+  
     # 유사도가 가장 높은 결과를 선택
     best_doc, best_score = max(docs, key=lambda x: x[1])
     # 결과 출력
@@ -45,4 +49,8 @@ def rag(question):
     #전체 결과 다 보기
     #for idx, doc in enumerate(docs):
     #    print(idx, doc)
+
+    
+    
+    
 
