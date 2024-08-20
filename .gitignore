@@ -5,3 +5,4 @@ fastapiserver/
 fastapiservertwo/
 model.pth
 .env
+app/model_directory/
