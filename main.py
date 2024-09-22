@@ -48,6 +48,7 @@ def remove_file(file_path: str):
 
 @app.post("/synthesize")
 def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, user_info: dict = Depends(verify_token)):
+    print("Received synthesize request")
     try:
         user_id = user_info["user_id"]
         parent_id = user_info["parent_id"]
