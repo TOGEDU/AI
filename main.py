@@ -9,7 +9,6 @@ import os
 from dotenv import load_dotenv
 from corsmiddleware import apply_cors_middleware
 from rag import rag
-#from llama import TextGenerationRequest, token_generator
 
 # .env 파일 로드
 load_dotenv()
@@ -48,6 +47,7 @@ def remove_file(file_path: str):
 
 @app.post("/synthesize")
 def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, user_info: dict = Depends(verify_token)):
+    print("Received synthesize request")
     try:
         user_id = user_info["user_id"]
         parent_id = user_info["parent_id"]
@@ -90,19 +90,11 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-#@app.post("/generate")
-#async def generate_text(request: TextGenerationRequest):
-    try:
-        return StreamingResponse(token_generator(request.input_text), media_type="text/plain")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 #메세지 전송
 @app.get("/chat")
 def receive_chat(message: str = Query(...)):
     # 채팅 메시지 처리 로직 추가
-    #point = rag(message)
+    point = rag(message)
     # 답변 생성
     response_message = message+"의 답변."
     return {"status": "success", "message": response_message}
