@@ -1,5 +1,5 @@
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 import os
 #hugginface로그인하고 token입력
 import huggingface_hub
@@ -23,9 +23,8 @@ embedding_model = HuggingFaceEmbeddings(
     encode_kwargs=encode_kwargs
 )
 
-def rag(question):
+def rag(question, file_path):
     # 텍스트 파일을 직접 열어서 utf-8 인코딩으로 읽기
-    file_path = r"llm\a.txt"
     with open(file_path, 'r', encoding='utf-8') as f:
       text = f.read()
       
