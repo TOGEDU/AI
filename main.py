@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv
 from corsmiddleware import apply_cors_middleware
 from rag import rag
+from llm import load_llm_model, generate_llm_response
 
 # .env 파일 로드
 load_dotenv()
@@ -23,6 +24,9 @@ apply_cors_middleware(app)
 encoded_secret_key = os.getenv("SECRET_KEY")
 SECRET_KEY = base64.b64decode(encoded_secret_key)
 ALGORITHM = os.getenv("ALGORITHM", "HS512")
+
+# LLM 모델을 로드
+# llm_pipeline = load_llm_model()
 
 def verify_token(authorization: str = Header(...)):
     token = authorization.split(" ")[1] # "Bearer {token}"에서 토큰 부분 추출
@@ -107,11 +111,12 @@ def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_tok
         if not os.path.exists(file_path):
             raise HTTPException(status_code=400, detail=f"Config file not found: {file_path}")    
 
-        # 채팅 메시지 처리 로직 추가
-        point = rag(message, file_path)
-        # 답변 생성
-        response_message = message+"의 답변."
-        return {"status": "success", "message": response_message}
+        # RAG를 활용한 context 생성
+        context = rag(message, file_path)
+
+        # LLM을 사용하여 답변 생성
+        # response_message = generate_llm_response(message, context, llm_pipeline) # message+"의 답변."
+        return {"status": "success", "message": context}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))  
