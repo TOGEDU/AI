@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query
 import jwt
 import base64
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse
 import uvicorn
 from pydantic import BaseModel
 from synthesizer import XTTSynthesizer
@@ -92,12 +92,29 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
 
 #메세지 전송
 @app.get("/chat")
-def receive_chat(message: str = Query(...)):
-    # 채팅 메시지 처리 로직 추가
-    point = rag(message)
-    # 답변 생성
-    response_message = message+"의 답변."
-    return {"status": "success", "message": response_message}
+def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_token)):
+    print("Received synthesize request")
+    try:
+        user_id = user_info["user_id"]
+        parent_id = user_info["parent_id"]
+        print(f"user_id: {user_id}")
+        print(f"parent_id: {parent_id}")
+
+        # 사용자 ID에 따라 동적으로 파일 경로 생성
+        file_path = f"llm/{parent_id}-{user_id}/rag.txt"
+
+        # 파일 경로 존재 여부 확인
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=400, detail=f"Config file not found: {file_path}")    
+
+        # 채팅 메시지 처리 로직 추가
+        point = rag(message, file_path)
+        # 답변 생성
+        response_message = message+"의 답변."
+        return {"status": "success", "message": response_message}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))  
 
 # 기본 엔드포인트
 @app.get("/")
