@@ -80,9 +80,7 @@ def generate_llm_response(query, context, chat_history, llm_pipeline):
     - 답변
     """
   
-  # 프롬프트에 문맥과 질문을 삽입하여 텍스트 생성
-  formatted_chat_history = "\n".join([f"{msg.role}: {msg.message}" for msg in chat_history])
-  input_text = template.format(context=context, question=query, chat_history=formatted_chat_history)
+  input_text = template.format(context=context, question=query, chat_history=chat_history)
 
   # 터미네이터 설정
   terminators = [

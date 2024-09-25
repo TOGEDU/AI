@@ -105,7 +105,7 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
 
 #메세지 전송
 @app.get("/chat")
-def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_token)): # chat_history: List[ChatMessage] = Body(...),
+def receive_chat(message: str = Query(...), history: str = Query(...), user_info: dict = Depends(verify_token)): # chat_history: List[ChatMessage] = Body(...),
     print("Received synthesize request")
     try:
         user_id = user_info["user_id"]
@@ -123,11 +123,15 @@ def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_tok
         # RAG를 활용한 context 생성
         context = rag(message, file_path)
 
+        # 받은 채팅 내역을 로그로 출력
+        print("Received chat history:")
+        print(history)
+
         # LLM을 사용하여 답변 생성
         response_message = message+"의 답변."
         return {"status": "success", "message": response_message}
-        # response_message = generate_llm_response(message, context, chat_history, llm_pipeline) # message+"의 답변."
-        # return {"status": "success", "message": context}
+        # response_message = generate_llm_response(message, context, history, llm_pipeline) # message+"의 답변."
+        # return {"status": "success", "message": response_message}
     
     except Exception as e:
         print(f"Error occurred during chat processing: {str(e)}")
