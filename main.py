@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query, Body
 import jwt
 import base64
 from fastapi.responses import FileResponse
@@ -9,6 +9,8 @@ import os
 from dotenv import load_dotenv
 from corsmiddleware import apply_cors_middleware
 from rag import rag
+from llm import load_llm_model, generate_llm_response
+from typing import List
 
 # .env 파일 로드
 load_dotenv()
@@ -24,8 +26,15 @@ encoded_secret_key = os.getenv("SECRET_KEY")
 SECRET_KEY = base64.b64decode(encoded_secret_key)
 ALGORITHM = os.getenv("ALGORITHM", "HS512")
 
+# LLM 모델을 로드
+# llm_pipeline = load_llm_model()
+
 def verify_token(authorization: str = Header(...)):
-    token = authorization.split(" ")[1] # "Bearer {token}"에서 토큰 부분 추출
+    try:
+        token = authorization.split(" ")[1] # "Bearer {token}"에서 토큰 부분 추출
+    except IndexError:
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
@@ -38,6 +47,10 @@ def verify_token(authorization: str = Header(...)):
 
 class SynthesizeRequest(BaseModel):
     text: str
+
+class ChatMessage(BaseModel):
+    role: str # "자식" 또는 "부모"
+    message: str
 
 def remove_file(file_path: str):
     try:
@@ -92,7 +105,7 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
 
 #메세지 전송
 @app.get("/chat")
-def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_token)):
+def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_token)): # chat_history: List[ChatMessage] = Body(...),
     print("Received synthesize request")
     try:
         user_id = user_info["user_id"]
@@ -107,13 +120,17 @@ def receive_chat(message: str = Query(...), user_info: dict = Depends(verify_tok
         if not os.path.exists(file_path):
             raise HTTPException(status_code=400, detail=f"Config file not found: {file_path}")    
 
-        # 채팅 메시지 처리 로직 추가
-        point = rag(message, file_path)
-        # 답변 생성
+        # RAG를 활용한 context 생성
+        context = rag(message, file_path)
+
+        # LLM을 사용하여 답변 생성
         response_message = message+"의 답변."
         return {"status": "success", "message": response_message}
+        # response_message = generate_llm_response(message, context, chat_history, llm_pipeline) # message+"의 답변."
+        # return {"status": "success", "message": context}
     
     except Exception as e:
+        print(f"Error occurred during chat processing: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))  
 
 # 기본 엔드포인트
