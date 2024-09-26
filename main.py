@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query, Body
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header, Query
 import jwt
 import base64
 from fastapi.responses import FileResponse
@@ -10,13 +10,23 @@ from dotenv import load_dotenv
 from corsmiddleware import apply_cors_middleware
 from rag import rag
 from llm import load_llm_model, generate_llm_response
-from typing import List
+from sqlalchemy.orm import Session
+from models import ChatMessage 
+from database import get_db, SessionLocal
 
 # .env 파일 로드
 load_dotenv()
 
 # FastAPI 애플리케이션 인스턴스 생성
 app = FastAPI()
+
+# 데이터베이스 세션 생성 의존성
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # CORS 설정 적용
 apply_cors_middleware(app)
@@ -47,10 +57,6 @@ def verify_token(authorization: str = Header(...)):
 
 class SynthesizeRequest(BaseModel):
     text: str
-
-class ChatMessage(BaseModel):
-    role: str # "자식" 또는 "부모"
-    message: str
 
 def remove_file(file_path: str):
     try:
@@ -105,13 +111,34 @@ def synthesize(request: SynthesizeRequest, background_tasks: BackgroundTasks, us
 
 #메세지 전송
 @app.get("/chat")
-def receive_chat(message: str = Query(...), history: str = Query(...), user_info: dict = Depends(verify_token)): # chat_history: List[ChatMessage] = Body(...),
+def receive_chat(
+    message: str = Query(...), 
+    chat_room_id: int = Query(...), 
+    user_info: dict = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
     print("Received synthesize request")
     try:
         user_id = user_info["user_id"]
         parent_id = user_info["parent_id"]
         print(f"user_id: {user_id}")
         print(f"parent_id: {parent_id}")
+
+        # 해당 chat_room_id의 모든 메시지 조회
+        messages = db.query(ChatMessage).filter(ChatMessage.chat_room_id == chat_room_id).all()
+
+        if not messages:
+            raise HTTPException(status_code=404, detail="No messages found for this chat room")
+        
+        # 메시지 형식을 변환하여 로그로 출력
+        chat_history = ""
+        for msg in messages:
+            # role이 0이면 자녀, 1이면 부모로 설정
+            role = "자녀" if msg.role == 0 else "부모"
+            chat_history += f"{role}: {msg.message}\n"
+
+        print("Retrieved and formatted chat history from database:")
+        print(chat_history)
 
         # 사용자 ID에 따라 동적으로 파일 경로 생성
         file_path = f"llm/{parent_id}-{user_id}/rag.txt"
@@ -123,14 +150,10 @@ def receive_chat(message: str = Query(...), history: str = Query(...), user_info
         # RAG를 활용한 context 생성
         context = rag(message, file_path)
 
-        # 받은 채팅 내역을 로그로 출력
-        print("Received chat history:")
-        print(history)
-
         # LLM을 사용하여 답변 생성
         response_message = message+"의 답변."
         return {"status": "success", "message": response_message}
-        # response_message = generate_llm_response(message, context, history, llm_pipeline) # message+"의 답변."
+        # response_message = generate_llm_response(message, context, chat_history, llm_pipeline) # message+"의 답변."
         # return {"status": "success", "message": response_message}
     
     except Exception as e:
