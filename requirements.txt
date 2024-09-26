@@ -147,6 +147,7 @@ pydantic==2.8.2
 pydantic_core==2.20.1
 Pygments==2.18.0
 PyJWT==2.9.0
+PyMySQL==1.1.1
 pynndescent==0.5.13
 pyparsing==3.1.2
 PyPika==0.48.9
