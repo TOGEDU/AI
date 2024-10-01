@@ -3,7 +3,7 @@ from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
 import time
 
 # 사전 학습된 LLM 모델 로드 함수
-def load_llm_model(local_model_directory="E:\llm"):
+def load_llm_model(local_model_directory="llm\model_directory"):
   print(f"모델 경로: {local_model_directory}")
 
   # GPU 사용 여부를 확인하고 데이터 타입 설정

@@ -37,7 +37,7 @@ SECRET_KEY = base64.b64decode(encoded_secret_key)
 ALGORITHM = os.getenv("ALGORITHM", "HS512")
 
 # LLM 모델을 로드
-# llm_pipeline = load_llm_model()
+llm_pipeline = load_llm_model()
 
 def verify_token(authorization: str = Header(...)):
     try:
@@ -151,10 +151,10 @@ def receive_chat(
         context = rag(message, file_path)
 
         # LLM을 사용하여 답변 생성
-        response_message = message+"의 답변."
-        return {"status": "success", "message": response_message}
-        # response_message = generate_llm_response(message, context, chat_history, llm_pipeline) # message+"의 답변."
+        # response_message = message+"의 답변."
         # return {"status": "success", "message": response_message}
+        response_message = generate_llm_response(message, context, chat_history, llm_pipeline) # message+"의 답변."
+        return {"status": "success", "message": response_message}
     
     except Exception as e:
         print(f"Error occurred during chat processing: {str(e)}")
