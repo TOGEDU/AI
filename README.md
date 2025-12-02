@@ -65,8 +65,6 @@
 
 ## 4. 개발 스택
 
-<div><img src="./image/stack_ai.png" width="500px;" alt=""/></div>
-
 ### 🧠 AI / Machine Learning
 
 <div> <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"> <img src="https://img.shields.io/badge/langchain-%231C3C3C?style=for-the-badge&logo=langchain&logoColor=white"> <img src="https://img.shields.io/badge/Llama 3 Korean Blossom 8B-FF8C00?style=for-the-badge&logo=meta&logoColor=white"> <img src="https://img.shields.io/badge/XTTS-009630?style=for-the-badge&logo=coqui&logoColor=white"> <img src="https://img.shields.io/badge/Conversational Dataset-0066FF?style=for-the-badge&logo=google&logoColor=white"> </div>
