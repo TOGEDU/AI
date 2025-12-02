@@ -1,4 +1,4 @@
-# 부모 복제 AI 모델 파이프라인 : Cloning AI
+# CLONING AI
 
 <div><img src="./image/MAIN01.png" width="800px;" alt=""/></div>
 
