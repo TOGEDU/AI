@@ -70,12 +70,7 @@
 <div> <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"> <img src="https://img.shields.io/badge/langchain-%231C3C3C?style=for-the-badge&logo=langchain&logoColor=white"> <img src="https://img.shields.io/badge/Llama 3 Korean Blossom 8B-FF8C00?style=for-the-badge&logo=meta&logoColor=white"> <img src="https://img.shields.io/badge/XTTS-009630?style=for-the-badge&logo=coqui&logoColor=white"> <img src="https://img.shields.io/badge/Conversational Dataset-0066FF?style=for-the-badge&logo=google&logoColor=white"> </div>
 
 
-### 📦 Dataset
-
-<div><img src="https://img.shields.io/badge/AI Hub-0066FF?style=for-the-badge&logo=google&logoColor=white"></div>
-
-
-## 6. 참고 자료
+## 5. 참고 자료
 
 * 공감형 대화 데이터셋 (AI Hub)
 * Llama3 Korean Blossom 8B
