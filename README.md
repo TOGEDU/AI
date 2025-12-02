@@ -69,15 +69,8 @@
 
 ### 🧠 AI / Machine Learning
 
-<div> <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"> 
-<img src="https://img.shields.io/badge/LangChain-000000?style=for-the-badge&logo=chainlink&logoColor=white"> 
-<img src="https://img.shields.io/badge/FAISS-005571?style=for-the-badge&logo=facebook&logoColor=white"> 
-<img src="https://img.shields.io/badge/Llama 3 Blossom 8B-FF8C00?style=for-the-badge&logo=meta&logoColor=white"> 
-<img src="https://img.shields.io/badge/XTTS-00A86B?style=for-the-badge&logo=coqui&logoColor=white"></div>
+<div> <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"> <img src="https://img.shields.io/badge/langchain-%231C3C3C?style=for-the-badge&logo=langchain&logoColor=white"> <img src="https://img.shields.io/badge/Llama 3 Korean Blossom 8B-FF8C00?style=for-the-badge&logo=meta&logoColor=white"> <img src="https://img.shields.io/badge/XTTS-009630?style=for-the-badge&logo=coqui&logoColor=white"> <img src="https://img.shields.io/badge/Conversational Dataset-0066FF?style=for-the-badge&logo=google&logoColor=white"> </div>
 
-### 🔤 Embedding
-
-<div><img src="https://img.shields.io/badge/ko-sroberta-multitask-005BBB?style=for-the-badge&logo=google&logoColor=white"></div>
 
 ### 📦 Dataset
 
