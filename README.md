@@ -51,7 +51,7 @@
 ## 🔍 3-2. RAG (Retrieval-Augmented Generation)
 
 <div><img src="./image/RAG01.png" width="800px;" alt=""/></div>
-<div><img src="./image/RAG02.png" width="800px;" alt=""/></div>
+<div><img src="./image/스크린샷 2025-12-02 오후 4.42.59.png" width="800px;" alt=""/></div>
 
 * LangChain + FAISS 기반 검색 구조
 * 육아일기·상담기록 등을 chunking 후 벡터 인덱싱
@@ -65,7 +65,7 @@
 <div><img src="./image/tts01.png" width="800px;" alt=""/></div>
 <div><img src="./image/tts02.png" width="800px;" alt=""/></div>
 
-* 6초 분량 부모 음성으로 화자 임베딩 생성
+* 7분 가량의 부모 음성으로 화자 임베딩 생성
 * 텍스트 → 멜스펙트로그램 → waveform으로 단계적 합성
 * 한국어 음성 스타일에 최적화된 XTTS v2 모델 적용
 * 사용자 질문 → 부모 음성으로 응답 생성 end-to-end 처리
